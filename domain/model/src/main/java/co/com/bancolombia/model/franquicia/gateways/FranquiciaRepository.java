@@ -1,6 +1,6 @@
 package co.com.bancolombia.model.franquicia.gateways;
+import co.com.bancolombia.model.franquicia.Franquicia;
 
-import java.lang.foreign.Linker.Option;
 import java.util.Optional;
 
 public interface FranquiciaRepository {

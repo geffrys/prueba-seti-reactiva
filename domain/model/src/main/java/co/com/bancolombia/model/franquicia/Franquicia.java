@@ -1,5 +1,6 @@
 package co.com.bancolombia.model.franquicia;
 import lombok.Builder;
+import co.com.bancolombia.model.sucursal.Sucursal;
 
 import java.util.List;
 

@@ -1,5 +1,5 @@
 package co.com.bancolombia.model.producto.gateways;
-
+import co.com.bancolombia.model.producto.Producto;
 import java.util.Optional;
 
 public interface ProductoRepository {
