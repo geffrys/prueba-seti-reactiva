@@ -12,6 +12,7 @@ dependencies {
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     testImplementation 'com.tngtech.archunit:archunit:1.4.1'
     testImplementation 'tools.jackson.core:jackson-databind'
+    implementation("org.postgresql:postgresql:42.1.4")
 }
 
 tasks.register('explodedJar', Copy) {
