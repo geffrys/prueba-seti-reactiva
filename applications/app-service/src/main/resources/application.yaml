@@ -5,10 +5,6 @@ spring:
     name: "ScaffoldQuickStart"
   devtools:
     add-properties: false
-  h2:
-    console:
-      enabled: true
-      path: "/h2"
   profiles:
     include: null
   datasource:
@@ -29,3 +25,11 @@ management:
         enabled: true
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+
+adapters:
+  r2dbc:
+    host: "${SPRING_DATASOURCE_HOST:localhost}"
+    port: "${SPRING_DATASOURCE_PORT:5490}"
+    database: "${SPRING_DATASOURCE_DATABASE:mydatabase}"
+    username: "${SPRING_DATASOURCE_USERNAME:myuser}"
+    password: "${SPRING_DATASOURCE_PASSWORD:mypassword}"
