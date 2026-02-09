@@ -37,7 +37,13 @@ Utilizando el scaffolding de bancolombia, implementando principalmente como serv
 ### Capa de Aplicación
 - En esta capa se definen los servicios que contienen la lógica de negocio y los controladores REST para exponer la API. Los controladores manejan las solicitudes HTTP y delegan la lógica de negocio a los servicios, que a su vez interactúan con los repositorios para acceder a los datos.
 
+## Prerequisito
+- Java 21
+- PostgreSQL, donde se creará una base de datos para la aplicación. Puedes usar Docker para facilitar la configuración de PostgreSQL.
+- Gradle para gestionar las dependencias y ejecutar la aplicación.
+
 ## Como incializar la aplicación
+0. Ejecutar las sentencias de SQL que estan en la carpeta `database` para crear la base de datos y las tablas necesarias para la aplicación.
 1. Configurar en la capa de aplicacion el archivo `application.yml` con los detalles de tu base de datos PostgreSQL, especificamente las variables:
     - `adapter.r2dbc.url`
     - `adapter.r2dbc.username`
