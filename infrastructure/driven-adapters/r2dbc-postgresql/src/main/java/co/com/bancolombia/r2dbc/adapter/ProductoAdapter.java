@@ -5,7 +5,7 @@ import co.com.bancolombia.r2dbc.helper.ReactiveAdapterOperations;
 import co.com.bancolombia.r2dbc.entities.Product;
 import co.com.bancolombia.r2dbc.repository.ProductReactiveRepository;
 import co.com.bancolombia.model.producto.Producto;
-
+import co.com.bancolombia.model.producto.gateways.ProductoRepository;
 
 
 @Repository
@@ -14,7 +14,7 @@ public class ProductoAdapter extends ReactiveAdapterOperations<
     Product/* change for adapter model */,
     Long,
     ProductReactiveRepository
-> {
+> implements ProductoRepository{
     public ProductoAdapter(ProductReactiveRepository repository, ObjectMapper mapper) {
         /**
          *  Could be use mapper.mapBuilder if your domain model implement builder pattern

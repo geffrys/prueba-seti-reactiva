@@ -1,11 +1,11 @@
 package co.com.bancolombia.model.franquicia.gateways;
 import co.com.bancolombia.model.franquicia.Franquicia;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Optional;
 
 public interface FranquiciaRepository {
-    Optional<Franquicia> findById(String id);
-    Optional<Franquicia> save(Franquicia franquicia);
-    Boolean deleteById(String id);
-    Boolean existsById(String id);
+    Mono<Franquicia> findById(Long id);
+    Flux<Franquicia> findAll();
+    Mono<Franquicia> save(Franquicia franquicia);
 }

@@ -1,10 +1,11 @@
 package co.com.bancolombia.model.producto.gateways;
 import co.com.bancolombia.model.producto.Producto;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 
 public interface ProductoRepository {
-    Optional<Producto> findById(String id);
-    Optional<Producto> save(Producto producto);
-    Boolean deleteById(String id);
-    Boolean existsById(String id);
+    Flux<Producto> findAll();
+    Mono<Producto> save(Producto producto);
+    Mono<Producto> findById(Long id);    
 }

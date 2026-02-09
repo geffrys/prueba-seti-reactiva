@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class Franquicia {
-    private String id;
+    private Long id;
     private String nombre;
     private List<Sucursal> sucursales;
 }

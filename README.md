@@ -21,11 +21,28 @@ Utilizando el scaffolding de bancolombia, implementando principalmente como serv
    ```bash
     ./gradlew bootRun
     ```
+## Entidades
+- `Franquicia`: Representa una franquicia con atributos como `id`, `nombre` y `descripcion`.
+- `Sucursal`: Representa una sucursal de una franquicia, con atributos como `id`, `nombre`, y una referencia a la `Franquicia` a la que pertenece.
+- `Producto`: Representa un producto con atributos como `id`, `nombre`, `stock` y una referencia a la `Sucursal` donde se encuentra.
+
 
 ## Desarrollo
 ### Capa de Dominio
 - En esta capa se definen las entidades `Franquicia`, `Sucursal` y `Producto`, así como las interfaces de los repositorios para cada una de estas entidades, que actuan como entry points para la capa de infraestructura.
 ### Capa de Infraestructura
-- Aquí se implementan los repositorios utilizando JPA, definiendo las entidades correspondientes a las tablas de la base de datos y las interfaces que extienden `JpaRepository` para cada una de las entidades. Usando un adapter para mapear entre los modelos de dominio y los modelos de persistencia.
+- Aquí se implementan los repositorios utilizando R2DBC, definiendo las entidades correspondientes a las tablas de la base de datos y las interfaces que extienden `ReactiveRepository` para cada una de las entidades. Usando un adapter para mapear entre los modelos de dominio y los modelos de persistencia.
+- Usamos ReactiveWeb como entry point porque el dominio y la infraestructura son reactivos; MVC introduciría bloqueo y rompería el modelo de backpressure(backpressure es la capacidad de un sistema para manejar la presión de retroceso en flujos de datos reactivos).
+
 ### Capa de Aplicación
 - En esta capa se definen los servicios que contienen la lógica de negocio y los controladores REST para exponer la API. Los controladores manejan las solicitudes HTTP y delegan la lógica de negocio a los servicios, que a su vez interactúan con los repositorios para acceder a los datos.
+
+## Como incializar la aplicación
+1. Configurar en la capa de aplicacion el archivo `application.yml` con los detalles de tu base de datos PostgreSQL, especificamente las variables:
+    - `adapter.r2dbc.url`
+    - `adapter.r2dbc.username`
+    - `adapter.r2dbc.password`
+2. Iniciar la aplicación utilizando Gradle, especificamente el wrapper de gradle para ejecutar el comando `bootRun`:
+    ```bash
+     ./gradlew bootRun
+     ```

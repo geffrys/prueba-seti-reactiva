@@ -4,7 +4,6 @@ dependencies {
 	implementation project(':r2dbc-postgresql')
 	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	testImplementation 'org.springframework:spring-web'
-	implementation project(':api-rest')
 	implementation project(':reactive-web')
     implementation project(':model')
     implementation project(':usecase')

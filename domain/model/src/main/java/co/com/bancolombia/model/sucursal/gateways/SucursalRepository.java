@@ -1,10 +1,10 @@
 package co.com.bancolombia.model.sucursal.gateways;
 import co.com.bancolombia.model.sucursal.Sucursal;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface SucursalRepository {
-    Optional<Sucursal> findById(Long id);
-    Optional<Sucursal> save(Sucursal sucursal);
-    Boolean deleteById(Long id);
-    Boolean existsById(Long id);
+    Mono<Sucursal> findById(Long id);
+    Flux<Sucursal> findAll();
+    Mono<Sucursal> save(Sucursal sucursal);
 }
