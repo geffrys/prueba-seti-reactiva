@@ -7,10 +7,10 @@ import reactor.core.publisher.Flux;
 
 @RequiredArgsConstructor
 public class GetProductosUseCase {
-    private final ProductoRepository repository;
+	private final ProductoRepository repository;
 
-    public Flux<Producto> execute() {
-        // Lógica del caso de uso utilizando el repositorio
-        return Flux.from(repository.findAll());
-    }
+	public Flux<Producto> execute() {
+		// Lógica del caso de uso utilizando el repositorio
+		return Flux.from(repository.findAll());
+	}
 }
