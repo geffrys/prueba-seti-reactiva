@@ -21,7 +21,26 @@ public class ProductoAdapter extends ReactiveAdapterOperations<
          *  super(repository, mapper, d -> mapper.mapBuilder(d,ObjectModel.ObjectModelBuilder.class).build());
          *  Or using mapper.map with the class of the object model
          */
-        super(repository, mapper, d -> mapper.map(d, Producto.class/* change for domain model */));
+        super(repository, mapper, ProductoAdapter::toDomain);
+    }
+
+    private static Producto toDomain(Product data) {
+        return new Producto(
+            data.getId(),
+            data.getName(),
+            data.getStock(),
+            data.getBranchId()
+        );
+    }
+
+    @Override
+    protected Product toData(Producto domain) {
+        Product data = new Product();
+        data.setId(domain.getId());
+        data.setName(domain.getNombre());
+        data.setStock(domain.getStock());
+        data.setBranchId(domain.getSucursalId());
+        return data;
     }
 
 }

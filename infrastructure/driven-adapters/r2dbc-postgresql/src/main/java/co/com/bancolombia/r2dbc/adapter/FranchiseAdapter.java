@@ -22,6 +22,22 @@ public class FranchiseAdapter extends ReactiveAdapterOperations<
          *  super(repository, mapper, d -> mapper.mapBuilder(d,ObjectModel.ObjectModelBuilder.class).build());
          *  Or using mapper.map with the class of the object model
          */
-        super(repository, mapper, d -> mapper.map(d, Franquicia.class/* change for domain model */));
+        super(repository, mapper, FranchiseAdapter::toDomain);
+    }
+
+
+    private static Franquicia toDomain(Franchise data) {
+        return new Franquicia(
+            data.getId(),
+            data.getName()
+        );
+    }
+
+    @Override
+    protected Franchise toData(Franquicia domain) {
+        Franchise data = new Franchise();
+        data.setId(domain.getId());
+        data.setName(domain.getNombre());
+        return data;
     }
 }

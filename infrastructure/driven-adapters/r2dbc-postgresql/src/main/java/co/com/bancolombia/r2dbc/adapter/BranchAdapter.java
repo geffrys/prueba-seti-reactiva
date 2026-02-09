@@ -1,5 +1,6 @@
 package co.com.bancolombia.r2dbc.adapter;
 
+
 import co.com.bancolombia.model.sucursal.Sucursal;
 import co.com.bancolombia.model.sucursal.gateways.SucursalRepository;
 import co.com.bancolombia.r2dbc.entities.Branch;
@@ -22,6 +23,25 @@ public class BranchAdapter extends ReactiveAdapterOperations<
          *  super(repository, mapper, d -> mapper.mapBuilder(d,ObjectModel.ObjectModelBuilder.class).build());
          *  Or using mapper.map with the class of the object model
          */
-        super(repository, mapper, d -> mapper.map(d, Sucursal.class/* change for domain model */));
+        super(repository, mapper, BranchAdapter::toDomain);
     }
+
+    
+    private static Sucursal toDomain(Branch data) {
+        return new Sucursal(
+            data.getId(),
+            data.getName(),
+            data.getFranchiseId()
+        );
+    }
+
+    @Override
+    protected Branch toData(Sucursal domain) {
+        Branch data = new Branch();
+        data.setId(domain.getId());
+        data.setName(domain.getNombre());
+        return data;
+    }
+
+    
 }

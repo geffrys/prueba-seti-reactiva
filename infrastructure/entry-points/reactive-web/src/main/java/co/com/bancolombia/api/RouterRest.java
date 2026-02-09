@@ -1,5 +1,6 @@
 package co.com.bancolombia.api;
 
+import co.com.bancolombia.api.controller.FranquiciaController;
 import co.com.bancolombia.api.controller.HealthController;
 import lombok.RequiredArgsConstructor;
 
@@ -16,14 +17,20 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @RequiredArgsConstructor
 public class RouterRest {
 
-    // private final HealthController healthController;
-    // private final Handler handler;
-
     @Bean
-    public RouterFunction<ServerResponse> routerFunction(Handler handler, HealthController healthController) {
+    public RouterFunction<ServerResponse> routerFunction(Handler handler, HealthController healthController, FranquiciaController franquiciaController) {
         return route(GET("/api/usecase/path"), handler::listenGETUseCase)
         .andRoute(POST("/api/usecase/otherpath"), handler::listenPOSTUseCase)
         .andRoute(GET("/api/health"), healthController::health)
+        
+        
+        // FRANQUICIA ROUTES
+        .andRoute(GET("/api/franquicias"), franquiciaController::getAllFranquicias) 
+        .andRoute(GET("/api/franquicias/{id}"), franquiciaController::getFranquiciaById)
+        .andRoute(POST("/api/franquicias"), franquiciaController::createFranquicia)
+
+
         .and(route(GET("/api/otherusercase/path"), handler::listenGETOtherUseCase));
+
     }
 }

@@ -1,6 +1,5 @@
 package co.com.bancolombia.usecase.franquicia;
 
-import java.util.List;
 
 import co.com.bancolombia.model.franquicia.Franquicia;
 import co.com.bancolombia.model.franquicia.gateways.FranquiciaRepository;
@@ -12,11 +11,9 @@ import reactor.core.publisher.Flux;
 public class GetFranquiciasUseCase {
     private final FranquiciaRepository repository;
 
-    public Flux<List<Franquicia>> excecute() {
+    public Flux<Franquicia> execute() {
         // Lógica del caso de uso utilizando el repositorio
-        return Flux.from(repository.findAll())
-                .collectList()
-                .flux();
+        return Flux.from(repository.findAll());
         
     }
 }
