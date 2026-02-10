@@ -10,8 +10,6 @@ public class SaveProductoUseCase {
 	private final ProductoRepository repository;
 
 	public Mono<Producto> execute(Producto producto) {
-		// Lógica del caso de uso utilizando el repositorio
-		System.out.println("Saving Producto: " + producto.getNombre() + " with ID: " + producto.getId());
 		return repository.save(producto);
 	}
 }

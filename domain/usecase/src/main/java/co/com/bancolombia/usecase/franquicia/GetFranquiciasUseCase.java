@@ -13,7 +13,7 @@ public class GetFranquiciasUseCase {
 
     public Flux<Franquicia> execute() {
         // Lógica del caso de uso utilizando el repositorio
-        return Flux.from(repository.findAll());
+        return repository.findAll();
         
     }
 }

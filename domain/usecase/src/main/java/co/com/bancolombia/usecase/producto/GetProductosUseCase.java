@@ -11,6 +11,6 @@ public class GetProductosUseCase {
 
 	public Flux<Producto> execute() {
 		// Lógica del caso de uso utilizando el repositorio
-		return Flux.from(repository.findAll());
+		return repository.findAll();
 	}
 }
