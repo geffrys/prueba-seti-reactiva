@@ -32,6 +32,7 @@ public class RouterRest {
         .andRoute(GET("/api/franquicias/{id}"), franquiciaController::getFranquiciaById)
         .andRoute(POST("/api/franquicias"), franquiciaController::createFranquicia)
         .andRoute(GET("/api/franquicias/detailed/{id}"), franquiciaController::getFranquiciaDetailedById)
+        .andRoute(GET("/api/franquicias/{id}/max-stock-products"), productoController::getMaxStockProductsByFranquicia)
 
 
         // PRODUCTO ROUTES
@@ -42,6 +43,7 @@ public class RouterRest {
         .andRoute( PUT("/api/productos/{id}/modify-stock"), productoController::modifyStock)
         .andRoute(DELETE("/api/productos/sucursal/{sucursalId}/producto/{productoId}"), productoController::deleteProductoBySucursalId)
         .andRoute(DELETE("/api/productos/{id}"), productoController::deleteProductoById)
+
 
 
         // SUCURSAL ROUTES

@@ -10,8 +10,10 @@ import org.springframework.web.server.ResponseStatusException;
 import co.com.bancolombia.api.dto.ModifyStockDTO;
 import co.com.bancolombia.api.dto.SaveProductoDTO;
 import co.com.bancolombia.model.producto.Producto;
+import co.com.bancolombia.model.sucursal.ProductMaxStockBySucursal;
 import co.com.bancolombia.usecase.producto.DeleteProductoSucursalUseCase;
 import co.com.bancolombia.usecase.producto.DeleteProductoUseCase;
+import co.com.bancolombia.usecase.producto.GetMaxStockProductsByFranquiciaUseCase;
 import co.com.bancolombia.usecase.producto.GetProductoUseCase;
 import co.com.bancolombia.usecase.producto.GetProductosSucursalUseCase;
 import co.com.bancolombia.usecase.producto.GetProductosUseCase;
@@ -34,6 +36,7 @@ public class ProductoController {
         private final ModifyStockUseCase modifyStockUseCase;
         private final DeleteProductoSucursalUseCase deleteProductoSucursalUseCase;
         private final DeleteProductoUseCase deleteProductoUseCase;
+        private final GetMaxStockProductsByFranquiciaUseCase getMaxStockProductsByFranquiciaUseCase;
 
         public Mono<ServerResponse> getAllProductos(ServerRequest request) {
                 Flux<Producto> flujo = getProductosUseCase.execute()
@@ -171,4 +174,25 @@ public class ProductoController {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .body(mono, Boolean.class);
         }
+
+        public Mono<ServerResponse> getMaxStockProductsByFranquicia(ServerRequest request) {
+                Long franquiciaId = Long.valueOf(request.pathVariable("id"));
+
+                Flux<ProductMaxStockBySucursal> flujo = getMaxStockProductsByFranquiciaUseCase.execute(franquiciaId)
+                                .doOnSubscribe(s -> log.info(
+                                                "GET /productos/franquicia/{}/max-stock - Attempting to fetch products with max stock for franquicia with id {}",
+                                                franquiciaId, franquiciaId))
+                                .doOnNext(p -> log.info(
+                                                "Fetched producto with max stock: {} for franquicia with id {}",
+                                                p.getProducto().getId(), franquiciaId))
+                                .doOnError(e -> log.error(
+                                                "Error fetching products with max stock for franquicia with id {}",
+                                                franquiciaId, e));
+
+                return ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(flujo, ProductMaxStockBySucursal.class);
+        }
+
+
 }
