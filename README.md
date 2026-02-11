@@ -29,8 +29,10 @@ Utilizando el scaffolding de bancolombia, implementando principalmente como serv
     ```
 ## Entidades
 - `Franquicia`: Representa una franquicia con atributos como `id`, `nombre` y `descripcion`.
+- `FranquiciaDetail`: Es un modelo agregado que representa una franquicia junto con sus sucursales, permitiendo manejar la relación entre ambas entidades de manera más eficiente dentro del dominio.
 - `Sucursal`: Representa una sucursal de una franquicia, con atributos como `id`, `nombre`, y una referencia a la `Franquicia` a la que pertenece.
 - `Producto`: Representa un producto con atributos como `id`, `nombre`, `stock` y una referencia a la `Sucursal` donde se encuentra.
+- `ProductMaxStockBySucursal`: Es un modelo que representa el producto con el stock máximo en una sucursal específica, permitiendo obtener información relevante sobre el inventario de productos en cada sucursal.
 
 
 ## Desarrollo
