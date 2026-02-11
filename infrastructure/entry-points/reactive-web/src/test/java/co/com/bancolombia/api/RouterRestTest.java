@@ -1,9 +1,7 @@
 package co.com.bancolombia.api;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +28,6 @@ import co.com.bancolombia.usecase.sucursal.GetSucursalesUseCase;
 import co.com.bancolombia.usecase.sucursal.SaveSucursalUseCase;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @WebFluxTest(RouterRest.class)
@@ -49,6 +46,9 @@ class RouterRestTest {
 
     @MockitoBean
     private SaveFranquiciaUseCase saveFranquiciaUseCase;
+
+        @MockitoBean
+        private co.com.bancolombia.usecase.franquicia.GetFranquiciaDetailedUseCase getFranquiciaDetailedUseCase;
 
     @MockitoBean
     private GetSucursalUseCase getSucursalUseCase;
@@ -75,13 +75,16 @@ class RouterRestTest {
     private GetProductosSucursalUseCase getProductosSucursalUseCase;
 
     @MockitoBean
-    private HealthController healthController;
+        private co.com.bancolombia.usecase.producto.ModifyStockUseCase modifyStockUseCase;
 
-    @BeforeEach
-    void setUp() {
-        when(healthController.health(any()))
-                .thenReturn(ServerResponse.ok().build());
-    }
+        @MockitoBean
+        private co.com.bancolombia.usecase.producto.DeleteProductoSucursalUseCase deleteProductoSucursalUseCase;
+
+        @MockitoBean
+        private co.com.bancolombia.usecase.producto.DeleteProductoUseCase deleteProductoUseCase;
+
+        @MockitoBean
+        private co.com.bancolombia.usecase.producto.GetMaxStockProductsByFranquiciaUseCase getMaxStockProductsByFranquiciaUseCase;
 
     @Test
     @DisplayName("Health endpoint should be accessible")
@@ -95,6 +98,9 @@ class RouterRestTest {
     @Test
     @DisplayName("Franquicia routes should be properly registered")
     void testFranquiciaRoutes() {
+        when(getFranquiciasUseCase.execute())
+                .thenReturn(Flux.empty());
+
         webTestClient.get()
                 .uri("/api/franquicias")
                 .exchange()
@@ -104,6 +110,9 @@ class RouterRestTest {
     @Test
     @DisplayName("Sucursal routes should be properly registered")
     void testSucursalRoutes() {
+        when(getSucursalesUseCase.execute())
+                .thenReturn(Flux.empty());
+
         webTestClient.get()
                 .uri("/api/sucursales")
                 .exchange()
@@ -113,6 +122,9 @@ class RouterRestTest {
     @Test
     @DisplayName("Producto routes should be properly registered")
     void testProductoRoutes() {
+        when(getProductosUseCase.execute())
+                .thenReturn(Flux.empty());
+
         webTestClient.get()
                 .uri("/api/productos")
                 .exchange()
@@ -164,7 +176,7 @@ class RouterRestTest {
         Producto producto = Producto.builder()
                 .id(1L)
                 .nombre("Test Producto")
-                .stock(50L)
+                .stock(50)
                 .sucursalId(1L)
                 .build();
 

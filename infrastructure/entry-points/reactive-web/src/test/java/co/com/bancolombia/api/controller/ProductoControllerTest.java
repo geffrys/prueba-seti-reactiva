@@ -53,13 +53,13 @@ class ProductoControllerTest {
         testProducto = Producto.builder()
                 .id(1L)
                 .nombre("Producto Test")
-                .stock(100L)
+                .stock(100)
                 .sucursalId(1L)
                 .build();
 
         testSaveDTO = new SaveProductoDTO();
         testSaveDTO.setNombre("Producto Test");
-        testSaveDTO.setStock(100L);
+        testSaveDTO.setStock(100);
         testSaveDTO.setSucursalId(1L);
     }
 
