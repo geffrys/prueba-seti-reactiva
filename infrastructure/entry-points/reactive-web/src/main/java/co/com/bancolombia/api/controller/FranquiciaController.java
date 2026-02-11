@@ -6,6 +6,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import co.com.bancolombia.api.dto.SaveFranquiciaDTO;
 import co.com.bancolombia.model.franquicia.Franquicia;
+import co.com.bancolombia.usecase.franquicia.GetFranquiciaDetailedUseCase;
 import co.com.bancolombia.usecase.franquicia.GetFranquiciaUseCase;
 import co.com.bancolombia.usecase.franquicia.GetFranquiciasUseCase;
 import co.com.bancolombia.usecase.franquicia.SaveFranquiciaUseCase;
@@ -22,6 +23,7 @@ public class FranquiciaController {
     private final GetFranquiciaUseCase getFranquiciaUseCase;
     private final GetFranquiciasUseCase getFranquiciasUseCase;
     private final SaveFranquiciaUseCase saveFranquiciaUseCase;
+    private final GetFranquiciaDetailedUseCase getFranquiciaDetailedUseCase;
 
     public Mono<ServerResponse> getAllFranquicias(ServerRequest request) {
         Flux<Franquicia> flujo = getFranquiciasUseCase.execute()
@@ -61,4 +63,17 @@ public class FranquiciaController {
                 .body(mono, Franquicia.class);
     }
 
+    public Mono<ServerResponse> getFranquiciaDetailedById(ServerRequest request) {
+        String id = request.pathVariable("id");
+
+        Mono<?> mono = getFranquiciaDetailedUseCase.execute(Long.parseLong(id))
+                .doOnSubscribe(s -> log.info("GET /franquicias/detailed/{}", id))
+                .doOnNext(f -> log.info("Fetched detailed franquicia: {}", f.getFranquicia().getId()))
+                .doOnError(e -> log.error("Error fetching detailed franquicia with id " + id, e));
+        
+        return ServerResponse.ok()
+                .body(mono, Object.class);
+
+        
+    }   
 }

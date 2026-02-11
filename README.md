@@ -16,7 +16,13 @@ Utilizando el scaffolding de bancolombia, implementando principalmente como serv
    ```bash
     cd prueba-seti-reactiva
     ```
-3. En la capa de application, configura el archivo `application.properties` con los detalles de tu base de datos PostgreSQL.
+3. En la capa de application, configura el archivo `application.properties` o `application.yml` con los detalles de tu base de datos PostgreSQL.  especificamente las variables:
+    - `adapter.r2dbc.url`
+    - `adapter.r2dbc.username`
+    - `adapter.r2dbc.password`
+
+4. Asegúrate de tener PostgreSQL en ejecución y la base de datos configurada según las necesidades del proyecto, puedes usar las sentencias DDL que se encuentran en la carpeta `database` para crear las tablas necesarias.
+
 4. Inicia la aplicación utilizando Gradle:
    ```bash
     ./gradlew bootRun
@@ -31,6 +37,7 @@ Utilizando el scaffolding de bancolombia, implementando principalmente como serv
 ### Capa de Dominio
 - En esta capa se definen las entidades `Franquicia`, `Sucursal` y `Producto`, así como las interfaces de los repositorios para cada una de estas entidades, que actuan como entry points para la capa de infraestructura.
 - Se implementan los diferentes casos de uso (use cases) que contienen la lógica de negocio para manejar las operaciones relacionadas con las entidades, como obtener todas las franquicias, obtener una franquicia por ID, crear una nueva franquicia, etc. 
+- Se implementa un modelo agregado para `Franqucia` que incluye una lista de `Sucursal`. Esto permite manejar la relación entre franquicias y sucursales de manera más eficiente y coherente dentro del dominio, facilitando la gestión de las operaciones relacionadas con ambas entidades.
 ### Capa de Infraestructura
 - Aquí se implementan los repositorios utilizando R2DBC, definiendo las entidades correspondientes a las tablas de la base de datos y las interfaces que extienden `ReactiveRepository` para cada una de las entidades. Usando un adapter para mapear entre los modelos de dominio y los modelos de persistencia.
 - Usamos ReactiveWeb como entry point porque el dominio y la infraestructura son reactivos; MVC introduciría bloqueo y rompería el modelo de backpressure(backpressure es la capacidad de un sistema para manejar la presión de retroceso en flujos de datos reactivos).
@@ -45,14 +52,3 @@ Utilizando el scaffolding de bancolombia, implementando principalmente como serv
 - Java 21
 - PostgreSQL, donde se creará una base de datos para la aplicación. Puedes usar Docker para facilitar la configuración de PostgreSQL.
 - Gradle para gestionar las dependencias y ejecutar la aplicación.
-
-## Como incializar la aplicación
-0. Ejecutar las sentencias de SQL que estan en la carpeta `database` para crear la base de datos y las tablas necesarias para la aplicación.
-1. Configurar en la capa de aplicacion el archivo `application.yml` con los detalles de tu base de datos PostgreSQL, especificamente las variables:
-    - `adapter.r2dbc.url`
-    - `adapter.r2dbc.username`
-    - `adapter.r2dbc.password`
-2. Iniciar la aplicación utilizando Gradle, especificamente el wrapper de gradle para ejecutar el comando `bootRun`:
-    ```bash
-     ./gradlew bootRun
-     ```

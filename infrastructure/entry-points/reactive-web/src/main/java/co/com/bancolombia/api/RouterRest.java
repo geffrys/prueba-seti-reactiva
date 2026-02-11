@@ -20,9 +20,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class RouterRest {
 
     @Bean
-    public RouterFunction<ServerResponse> routerFunction(Handler handler, HealthController healthController, FranquiciaController franquiciaController, ProductoController productoController, SucursalController sucursalController) {
-        return route(GET("/api/usecase/path"), handler::listenGETUseCase)
-        .andRoute(POST("/api/usecase/otherpath"), handler::listenPOSTUseCase)
+    public RouterFunction<ServerResponse> routerFunction(HealthController healthController, FranquiciaController franquiciaController, ProductoController productoController, SucursalController sucursalController) {
+        return route(GET("/api/health"), healthController::health)
         .andRoute(GET("/api/health"), healthController::health)
         
         
@@ -30,6 +29,7 @@ public class RouterRest {
         .andRoute(GET("/api/franquicias"), franquiciaController::getAllFranquicias) 
         .andRoute(GET("/api/franquicias/{id}"), franquiciaController::getFranquiciaById)
         .andRoute(POST("/api/franquicias"), franquiciaController::createFranquicia)
+        .andRoute(GET("/api/franquicias/detailed/{id}"), franquiciaController::getFranquiciaDetailedById)
 
 
         // PRODUCTO ROUTES
@@ -43,10 +43,8 @@ public class RouterRest {
         .andRoute(GET("/api/sucursales"), sucursalController::getAllSucursales)
         .andRoute(GET("/api/sucursales/{id}"), sucursalController::getSucursalById)
         .andRoute(POST("/api/sucursales"), sucursalController::createSucursal)
-        .andRoute(GET("/api/sucursales/franquicia/{franquiciaId}"), sucursalController::getSucursalByFranquiciaId)
+        .andRoute(GET("/api/sucursales/franquicia/{franquiciaId}"), sucursalController::getSucursalByFranquiciaId); 
 
-
-        .and(route(GET("/api/otherusercase/path"), handler::listenGETOtherUseCase));
 
     }
 }
