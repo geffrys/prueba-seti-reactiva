@@ -4,6 +4,8 @@ import org.reactivecommons.utils.ObjectMapper;
 import co.com.bancolombia.r2dbc.helper.ReactiveAdapterOperations;
 import co.com.bancolombia.r2dbc.entities.Product;
 import co.com.bancolombia.r2dbc.repository.ProductReactiveRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import co.com.bancolombia.model.producto.Producto;
 import co.com.bancolombia.model.producto.gateways.ProductoRepository;
 
@@ -41,6 +43,12 @@ public class ProductoAdapter extends ReactiveAdapterOperations<
         data.setStock(domain.getStock());
         data.setBranchId(domain.getSucursalId());
         return data;
+    }
+
+    @Override
+    public Flux<Producto> findBySucursalId(Long sucursalId) {
+        return repository.findByBranchId(sucursalId)
+            .flatMap(p -> Mono.just(ProductoAdapter.toDomain(p)));
     }
 
 }

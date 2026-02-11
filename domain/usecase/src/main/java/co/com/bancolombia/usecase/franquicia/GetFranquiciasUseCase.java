@@ -12,8 +12,6 @@ public class GetFranquiciasUseCase {
     private final FranquiciaRepository repository;
 
     public Flux<Franquicia> execute() {
-        // Lógica del caso de uso utilizando el repositorio
         return repository.findAll();
-        
     }
 }

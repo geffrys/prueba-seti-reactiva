@@ -42,4 +42,11 @@ public class SucursalController {
             .flatMap(saveSucursalUseCase::execute)
             .flatMap(saved -> ServerResponse.ok().bodyValue(saved));
     }
+
+    public Mono<ServerResponse> getSucursalByFranquiciaId(ServerRequest request) {
+        String franquiciaId = request.pathVariable("franquiciaId");
+        return ServerResponse.ok()
+            .body(
+                getSucursalUseCase.execute(Long.parseLong(franquiciaId)), Sucursal.class);
+    }
 }

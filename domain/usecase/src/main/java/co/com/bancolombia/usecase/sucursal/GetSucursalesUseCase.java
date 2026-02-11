@@ -10,7 +10,6 @@ public class GetSucursalesUseCase {
     private final SucursalRepository repository;
 
     public Flux<Sucursal> execute() {
-        // Lógica del caso de uso utilizando el repositorio
         return repository.findAll();
     }
 }

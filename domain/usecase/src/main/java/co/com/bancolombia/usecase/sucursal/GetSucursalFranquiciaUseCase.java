@@ -3,15 +3,15 @@ package co.com.bancolombia.usecase.sucursal;
 import co.com.bancolombia.model.sucursal.Sucursal;
 import co.com.bancolombia.model.sucursal.gateways.SucursalRepository;
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Mono;
-
+import reactor.core.publisher.Flux;
 
 @RequiredArgsConstructor
-public class SaveSucursalUseCase {
+public class GetSucursalFranquiciaUseCase {
+
     private final SucursalRepository repository;
 
-    public Mono<Sucursal> execute(Sucursal sucursal) {
-        System.out.println("Guardando sucursal: " + sucursal.getFranquiciaId());
-        return repository.save(sucursal);
+    public Flux<Sucursal> execute(Long franquiciaId) {
+        return repository.findByFranquiciaId(franquiciaId);
     }
+    
 }

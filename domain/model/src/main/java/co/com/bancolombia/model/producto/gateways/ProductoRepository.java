@@ -7,5 +7,6 @@ import reactor.core.publisher.Mono;
 public interface ProductoRepository {
     Flux<Producto> findAll();
     Mono<Producto> save(Producto producto);
-    Mono<Producto> findById(Long id);    
+    Mono<Producto> findById(Long id);  
+    Flux<Producto> findBySucursalId(Long sucursalId);
 }

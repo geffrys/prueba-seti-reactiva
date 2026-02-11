@@ -45,4 +45,11 @@ public class ProductoController {
             .flatMap(saveProductoUseCase::execute)
             .flatMap(saved -> ServerResponse.ok().bodyValue(saved));
     }
+
+    public Mono<ServerResponse> getProductoBySucursalId(ServerRequest request) {
+        String sucursalId = request.pathVariable("sucursalId");
+        return ServerResponse.ok()
+            .body(
+                getProductoUseCase.execute(Long.parseLong(sucursalId)), Producto.class);
+    }
 }

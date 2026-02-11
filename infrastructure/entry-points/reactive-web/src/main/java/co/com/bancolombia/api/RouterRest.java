@@ -36,12 +36,14 @@ public class RouterRest {
         .andRoute(GET("/api/productos"), productoController::getAllProductos)
         .andRoute(GET("/api/productos/{id}"), productoController::getProductoById)
         .andRoute(POST("/api/productos"), productoController::createProducto)
+        .andRoute(GET("/api/productos/sucursal/{sucursalId}"), productoController::getProductoBySucursalId)
 
 
         // SUCURSAL ROUTES
         .andRoute(GET("/api/sucursales"), sucursalController::getAllSucursales)
         .andRoute(GET("/api/sucursales/{id}"), sucursalController::getSucursalById)
         .andRoute(POST("/api/sucursales"), sucursalController::createSucursal)
+        .andRoute(GET("/api/sucursales/franquicia/{franquiciaId}"), sucursalController::getSucursalByFranquiciaId)
 
 
         .and(route(GET("/api/otherusercase/path"), handler::listenGETOtherUseCase));
