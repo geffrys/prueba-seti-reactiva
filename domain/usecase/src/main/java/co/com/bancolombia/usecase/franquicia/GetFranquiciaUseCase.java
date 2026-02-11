@@ -11,7 +11,6 @@ public class GetFranquiciaUseCase {
     private final FranquiciaRepository repository;
 
     public Mono<Franquicia> execute(Long id) {
-        // Lógica del caso de uso utilizando el repositorio
         return repository.findById(id);
     }
 }

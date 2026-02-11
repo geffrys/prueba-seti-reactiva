@@ -5,10 +5,10 @@ import lombok.Setter;
 import lombok.Getter;
 
 @RequiredArgsConstructor
-@Getter
 @Setter
+@Getter
 public class SaveProductoDTO {
     private String nombre;
-    private Integer stock;
+    private Long stock;
     private Long sucursalId;
 }
