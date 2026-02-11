@@ -10,6 +10,8 @@ import org.springframework.web.server.ResponseStatusException;
 import co.com.bancolombia.api.dto.ModifyStockDTO;
 import co.com.bancolombia.api.dto.SaveProductoDTO;
 import co.com.bancolombia.model.producto.Producto;
+import co.com.bancolombia.usecase.producto.DeleteProductoSucursalUseCase;
+import co.com.bancolombia.usecase.producto.DeleteProductoUseCase;
 import co.com.bancolombia.usecase.producto.GetProductoUseCase;
 import co.com.bancolombia.usecase.producto.GetProductosSucursalUseCase;
 import co.com.bancolombia.usecase.producto.GetProductosUseCase;
@@ -30,15 +32,17 @@ public class ProductoController {
         private final SaveProductoUseCase saveProductoUseCase;
         private final GetProductosSucursalUseCase getProductosSucursalUseCase;
         private final ModifyStockUseCase modifyStockUseCase;
+        private final DeleteProductoSucursalUseCase deleteProductoSucursalUseCase;
+        private final DeleteProductoUseCase deleteProductoUseCase;
 
         public Mono<ServerResponse> getAllProductos(ServerRequest request) {
                 Flux<Producto> flujo = getProductosUseCase.execute()
                                 .doOnSubscribe(s -> log.info("GET /productos"))
                                 .doOnNext(p -> log.info("Fetched producto: {}", p.getId()))
                                 .doOnError(e -> log.error("Error fetching productos", e))
-                                .doOnComplete(() -> log.info("Successfully fetched all productos"))
-                                .switchIfEmpty(
-                                                Flux.error(new RuntimeException("No productos found")));
+                                .doOnComplete(() -> log.info("Successfully fetched all productos"));
+                                // .switchIfEmpty(
+                                //                 Flux.error(new RuntimeException("No productos found")));
                 return ServerResponse.ok()
                                 .body(flujo, Producto.class);
 
@@ -95,5 +99,76 @@ public class ProductoController {
                 return ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .body(mono, Producto.class);
+        }
+
+
+
+        public Mono<ServerResponse> deleteProductoBySucursalId(ServerRequest request) {
+                Long sucursalId = Long.valueOf(request.pathVariable("sucursalId"));
+                Long productoId = Long.valueOf(request.pathVariable("productoId"));
+
+                Mono<Boolean> mono = getProductoUseCase.execute(productoId)
+                                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Producto not found with id: " + productoId)))
+                                .flatMap(producto -> {
+                                        if (!producto.getSucursalId().equals(sucursalId)) {
+                                                return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                                                "Producto with id: " + productoId
+                                                                                + " does not belong to sucursal with id: "
+                                                                                + sucursalId));
+                                        }
+                                        return deleteProductoSucursalUseCase.execute(sucursalId, productoId);
+                                })
+                                .doOnSubscribe(s -> log.info(
+                                                "DELETE /productos/sucursal/{}/producto/{} - Attempting to delete producto with id {} from sucursal with id {}",
+                                                sucursalId, productoId, productoId, sucursalId))
+                                .doOnNext(deleted -> {
+                                        if (deleted) {
+                                                log.info(
+                                                                "Successfully deleted producto with id {} from sucursal with id {}",
+                                                                productoId, sucursalId);
+                                        } else {
+                                                log.warn(
+                                                                "Failed to delete producto with id {} from sucursal with id {}",
+                                                                productoId, sucursalId);
+                                        }
+                                })
+                                .doOnError(e -> log.error(
+                                                "Error deleting producto with id {} from sucursal with id {}",
+                                                productoId, sucursalId, e));
+
+                return ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(mono, Boolean.class);
+        }
+
+        public Mono<ServerResponse> deleteProductoById(ServerRequest request) {
+                Long productoId = Long.valueOf(request.pathVariable("id"));
+
+                Mono<Boolean> mono = getProductoUseCase.execute(productoId)
+                                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Producto not found with id: " + productoId)))
+                                .flatMap(producto -> deleteProductoUseCase.execute(productoId))
+                                .doOnSubscribe(s -> log.info(
+                                                "DELETE /productos/{} - Attempting to delete producto with id {}",
+                                                productoId, productoId))
+                                .doOnNext(deleted -> {
+                                        if (deleted) {
+                                                log.info(
+                                                                "Successfully deleted producto with id {}",
+                                                                productoId);
+                                        } else {
+                                                log.warn(
+                                                                "Failed to delete producto with id {}",
+                                                                productoId);
+                                        }
+                                })
+                                .doOnError(e -> log.error(
+                                                "Error deleting producto with id {}",
+                                                productoId, e));
+
+                return ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(mono, Boolean.class);
         }
 }

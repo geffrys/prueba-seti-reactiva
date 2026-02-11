@@ -5,8 +5,10 @@ import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 
 import co.com.bancolombia.r2dbc.entities.Product;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface ProductReactiveRepository extends ReactiveCrudRepository<Product, Long>, ReactiveQueryByExampleExecutor<Product> {
     Flux<Product> findByBranchId(Long branchId);
+    Mono<Void> deleteById(Long id);
 }

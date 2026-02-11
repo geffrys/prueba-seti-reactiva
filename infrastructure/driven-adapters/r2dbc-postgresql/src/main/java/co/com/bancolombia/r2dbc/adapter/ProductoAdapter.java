@@ -51,4 +51,11 @@ public class ProductoAdapter extends ReactiveAdapterOperations<
             .flatMap(p -> Mono.just(ProductoAdapter.toDomain(p)));
     }
 
+    @Override
+    public Mono<Void> deleteById(Long id) {
+        return repository.deleteById(id);
+    }
+
+    
+
 }

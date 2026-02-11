@@ -30,9 +30,9 @@ public class SucursalController {
                 .doOnSubscribe(s -> log.info("GET /sucursales"))
                 .doOnNext(s -> log.info("Fetched sucursal: {}", s.getId()))
                 .doOnError(e -> log.error("Error fetching sucursales", e))
-                .doOnComplete(() -> log.info("Successfully fetched all sucursales"))
-                .switchIfEmpty(
-                        Flux.error(new RuntimeException("No sucursales found")));
+                .doOnComplete(() -> log.info("Successfully fetched all sucursales"));
+                // .switchIfEmpty(
+                        // Flux.error(new RuntimeException("No sucursales found")));
         return ServerResponse.ok()
                 .body(flujo, Sucursal.class);
     }

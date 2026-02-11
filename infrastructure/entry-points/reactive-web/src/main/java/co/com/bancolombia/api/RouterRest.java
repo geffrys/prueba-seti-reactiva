@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.PUT;
+import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -39,6 +40,8 @@ public class RouterRest {
         .andRoute(POST("/api/productos"), productoController::createProducto)
         .andRoute(GET("/api/productos/sucursal/{sucursalId}"), productoController::getProductoBySucursalId)
         .andRoute( PUT("/api/productos/{id}/modify-stock"), productoController::modifyStock)
+        .andRoute(DELETE("/api/productos/sucursal/{sucursalId}/producto/{productoId}"), productoController::deleteProductoBySucursalId)
+        .andRoute(DELETE("/api/productos/{id}"), productoController::deleteProductoById)
 
 
         // SUCURSAL ROUTES

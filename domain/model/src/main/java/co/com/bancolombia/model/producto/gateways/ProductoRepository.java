@@ -9,4 +9,5 @@ public interface ProductoRepository {
     Mono<Producto> save(Producto producto);
     Mono<Producto> findById(Long id);  
     Flux<Producto> findBySucursalId(Long sucursalId);
+    Mono<Void> deleteById(Long id);
 }

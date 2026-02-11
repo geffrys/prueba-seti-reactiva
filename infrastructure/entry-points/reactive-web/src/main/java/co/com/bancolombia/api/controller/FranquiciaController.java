@@ -30,9 +30,9 @@ public class FranquiciaController {
                 .doOnSubscribe(s -> log.info("GET /franquicias"))
                 .doOnNext(f -> log.info("Fetched franquicia: {}", f.getId()))
                 .doOnError(e -> log.error("Error fetching franquicias", e))
-                .doOnComplete(() -> log.info("Successfully fetched all franquicias"))
-                .switchIfEmpty(
-                        Flux.error(new RuntimeException("No franquicias found")));
+                .doOnComplete(() -> log.info("Successfully fetched all franquicias"));
+                // .switchIfEmpty(
+                //         Flux.error(new RuntimeException("No franquicias found")));
 
         return ServerResponse.ok()
                 .body(flujo, Franquicia.class);
