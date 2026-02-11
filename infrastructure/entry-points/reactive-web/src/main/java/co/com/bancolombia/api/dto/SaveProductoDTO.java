@@ -9,6 +9,6 @@ import lombok.Getter;
 @Getter
 public class SaveProductoDTO {
     private String nombre;
-    private Long stock;
+    private Integer stock;
     private Long sucursalId;
 }

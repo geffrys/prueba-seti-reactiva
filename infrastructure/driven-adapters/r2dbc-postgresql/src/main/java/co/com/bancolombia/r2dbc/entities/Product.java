@@ -14,7 +14,7 @@ public class Product {
     @Id
     private Long id;
     private String name;
-    private Long stock;
+    private Integer stock;
     @Column("branch_id")
     private Long branchId;
 }
