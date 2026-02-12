@@ -7,11 +7,6 @@ spring:
     add-properties: false
   profiles:
     include: null
-  datasource:
-    url: "${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5490/mydatabase}"
-    username: "myuser"
-    password: "mypassword"
-    driverClassName: "org.postgresql.Driver"
   jpa:
     databasePlatform: "org.hibernate.dialect.PostgreSQLDialect"
 management:
