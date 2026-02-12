@@ -3,9 +3,47 @@ Este proyecto es una aplicación de ejemplo que utiliza Java 21, Spring Boot y J
 Utilizando el scaffolding de bancolombia, implementando principalmente como servidor jetty, con una base de datos postgreSQL, utilizando docker como apoyo para la base de datos, jpa para la gestión de entidades y repositorios, y lombok para reducir el código boilerplate.
 
 ## Estructura del Proyecto
-- `domain`: Contiene las entidades de negocio y las interfaces de los repositorios.
-- `infrastructure`: Contiene las implementaciones de los repositorios utilizando JPA y la configuración de la base de datos.
-- `presentation`: Contiene los controladores REST para exponer la API.
+- `domain`: Contiene las entidades de negocio y las interfaces de los repositorios(puertos).
+- `infrastructure`: Contiene las implementaciones(adapters) de los repositorios utilizando R2DBC, la implementacion de la base de datos y la implementacion de los entrypoints.
+- `application`: Inicializa la aplicacion y se define la configuracion.
+
+## Desarrollo
+### Capa de Dominio
+- En esta capa se definen las entidades `Franquicia`, `Sucursal` y `Producto`, así como las interfaces de los repositorios para cada una de estas entidades, que actuan como entry points para la capa de infraestructura.
+- Se implementan los diferentes casos de uso (use cases) que contienen la lógica de negocio para manejar las operaciones relacionadas con las entidades, como obtener todas las franquicias, obtener una franquicia por ID, crear una nueva franquicia, etc. 
+- Se implementa un modelo agregado para `Franqucia` que incluye una lista de `Sucursal`. Esto permite manejar la relación entre franquicias y sucursales de manera más eficiente y coherente dentro del dominio, facilitando la gestión de las operaciones relacionadas con ambas entidades.
+#### Entidades
+- `Franquicia`: Representa una franquicia con atributos como `id`, `nombre` y `descripcion`.
+- `FranquiciaDetail`: Es un modelo agregado que representa una franquicia junto con sus sucursales, permitiendo manejar la relación entre ambas entidades de manera más eficiente dentro del dominio.
+- `Sucursal`: Representa una sucursal de una franquicia, con atributos como `id`, `nombre`, y una referencia a la `Franquicia` a la que pertenece.
+- `Producto`: Representa un producto con atributos como `id`, `nombre`, `stock` y una referencia a la `Sucursal` donde se encuentra.
+- `ProductMaxStockBySucursal`: Es un modelo que representa el producto con el stock máximo en una sucursal específica, permitiendo obtener información relevante sobre el inventario de productos en cada sucursal.
+### Capa de Infraestructura
+- Aquí se implementan los repositorios utilizando R2DBC, definiendo las entidades correspondientes a las tablas de la base de datos y las interfaces que extienden `ReactiveRepository` para cada una de las entidades. Usando un adapter para mapear entre los modelos de dominio y los modelos de persistencia.
+- Usamos ReactiveWeb como entry point porque el dominio y la infraestructura son reactivos; MVC introduciría bloqueo y rompería el modelo de backpressure(backpressure es la capacidad de un sistema para manejar la presión de retroceso en flujos de datos reactivos).
+- En el driver adapter, se implementan los métodos para mapear entre los modelos de dominio y los modelos de persistencia, lo que permite una separación clara entre las capas y facilita el mantenimiento del código, debido a que el mapper generico no pudo ser implementado por limitaciones del framework y del lenguaje.
+- En esta capa especificamente en los controllers, aplicamos los operadores reactivos como `doOnNext`, `doOnError` y `doOnComplete` para agregar logging y manejo de errores en las operaciones de los repositorios, lo que mejora la trazabilidad y facilita la depuración de la aplicación.
+
+#### Endpoints
+Todas las operaciones se exponen a través de una API REST con el prefijo /api, con los siguientes endpoints:
+- `GET /franquicias`: Obtiene todas las franquicias.
+- `GET /franquicias/{id}`: Obtiene una franquicia por ID.
+- `POST /franquicias`: Crea una nueva franquicia.
+- `GET /franquicias/{id}/max-stock-products`: Obtiene todas las sucursales de una franquicia específica.
+- `GET /franquicias/detailed/{id}`: Obtiene todas las sucursales de una franquicia específica.
+
+
+- `GET /sucursales`: Obtiene todas las sucursales.
+- `GET /sucursales/{id}`: Obtiene una sucursal por ID.
+- `POST /sucursales`: Crea una nueva sucursal.
+- `GET /sucursales/franquicia/{franquiciaId}`: Obtiene todas las sucursales de una franquicia específica.
+
+- `GET /productos`: Obtiene todos los productos.
+- `GET /productos/{id}`: Obtiene un producto por ID.
+- `POST /productos`: Crea un nuevo producto.
+- `GET /productos/sucursal/{sucursalId}`: Obtiene todos los productos de una sucursal específica.
+- `PUT /productos/{id}/stock`: Actualiza el stock de un producto específico.
+- `DELETE /productos/{id}`: Elimina un producto por ID.
 
 ## Inicialización del Proyecto
 1. Clona el repositorio:
@@ -27,30 +65,8 @@ Utilizando el scaffolding de bancolombia, implementando principalmente como serv
    ```bash
     ./gradlew bootRun
     ```
-## Entidades
-- `Franquicia`: Representa una franquicia con atributos como `id`, `nombre` y `descripcion`.
-- `FranquiciaDetail`: Es un modelo agregado que representa una franquicia junto con sus sucursales, permitiendo manejar la relación entre ambas entidades de manera más eficiente dentro del dominio.
-- `Sucursal`: Representa una sucursal de una franquicia, con atributos como `id`, `nombre`, y una referencia a la `Franquicia` a la que pertenece.
-- `Producto`: Representa un producto con atributos como `id`, `nombre`, `stock` y una referencia a la `Sucursal` donde se encuentra.
-- `ProductMaxStockBySucursal`: Es un modelo que representa el producto con el stock máximo en una sucursal específica, permitiendo obtener información relevante sobre el inventario de productos en cada sucursal.
 
-
-## Desarrollo
-### Capa de Dominio
-- En esta capa se definen las entidades `Franquicia`, `Sucursal` y `Producto`, así como las interfaces de los repositorios para cada una de estas entidades, que actuan como entry points para la capa de infraestructura.
-- Se implementan los diferentes casos de uso (use cases) que contienen la lógica de negocio para manejar las operaciones relacionadas con las entidades, como obtener todas las franquicias, obtener una franquicia por ID, crear una nueva franquicia, etc. 
-- Se implementa un modelo agregado para `Franqucia` que incluye una lista de `Sucursal`. Esto permite manejar la relación entre franquicias y sucursales de manera más eficiente y coherente dentro del dominio, facilitando la gestión de las operaciones relacionadas con ambas entidades.
-### Capa de Infraestructura
-- Aquí se implementan los repositorios utilizando R2DBC, definiendo las entidades correspondientes a las tablas de la base de datos y las interfaces que extienden `ReactiveRepository` para cada una de las entidades. Usando un adapter para mapear entre los modelos de dominio y los modelos de persistencia.
-- Usamos ReactiveWeb como entry point porque el dominio y la infraestructura son reactivos; MVC introduciría bloqueo y rompería el modelo de backpressure(backpressure es la capacidad de un sistema para manejar la presión de retroceso en flujos de datos reactivos).
-- En el driver adapter, se implementan los métodos para mapear entre los modelos de dominio y los modelos de persistencia, lo que permite una separación clara entre las capas y facilita el mantenimiento del código, debido a que el mapper generico no pudo ser implementado por limitaciones del framework y del lenguaje.
-- En esta capa especificamente en los controllers, aplicamos los operadores reactivos como `doOnNext`, `doOnError` y `doOnComplete` para agregar logging y manejo de errores en las operaciones de los repositorios, lo que mejora la trazabilidad y facilita la depuración de la aplicación.
-
-
-### Capa de Aplicación
-- En esta capa se definen los servicios que contienen la lógica de negocio y los controladores REST para exponer la API. Los controladores manejan las solicitudes HTTP y delegan la lógica de negocio a los servicios, que a su vez interactúan con los repositorios para acceder a los datos.
-
-## Prerequisito
+## Prerequisitos
 - Java 21
 - PostgreSQL, donde se creará una base de datos para la aplicación. Puedes usar Docker para facilitar la configuración de PostgreSQL.
 - Gradle para gestionar las dependencias y ejecutar la aplicación.
