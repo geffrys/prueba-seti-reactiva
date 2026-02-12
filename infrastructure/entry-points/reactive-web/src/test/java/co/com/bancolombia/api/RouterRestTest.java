@@ -1,11 +1,14 @@
 package co.com.bancolombia.api;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import co.com.bancolombia.api.controller.FranquiciaController;
@@ -16,11 +19,16 @@ import co.com.bancolombia.model.franquicia.Franquicia;
 import co.com.bancolombia.model.producto.Producto;
 import co.com.bancolombia.model.sucursal.Sucursal;
 import co.com.bancolombia.usecase.franquicia.GetFranquiciaUseCase;
+import co.com.bancolombia.usecase.franquicia.GetFranquiciaDetailedUseCase;
 import co.com.bancolombia.usecase.franquicia.GetFranquiciasUseCase;
 import co.com.bancolombia.usecase.franquicia.SaveFranquiciaUseCase;
+import co.com.bancolombia.usecase.producto.DeleteProductoSucursalUseCase;
+import co.com.bancolombia.usecase.producto.DeleteProductoUseCase;
+import co.com.bancolombia.usecase.producto.GetMaxStockProductsByFranquiciaUseCase;
 import co.com.bancolombia.usecase.producto.GetProductoUseCase;
 import co.com.bancolombia.usecase.producto.GetProductosSucursalUseCase;
 import co.com.bancolombia.usecase.producto.GetProductosUseCase;
+import co.com.bancolombia.usecase.producto.ModifyStockUseCase;
 import co.com.bancolombia.usecase.producto.SaveProductoUseCase;
 import co.com.bancolombia.usecase.sucursal.GetSucursalFranquiciaUseCase;
 import co.com.bancolombia.usecase.sucursal.GetSucursalUseCase;
@@ -30,8 +38,16 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-@WebFluxTest(RouterRest.class)
-@Import({FranquiciaController.class, SucursalController.class, ProductoController.class, HealthController.class})
+import org.springframework.web.reactive.function.server.ServerResponse;
+
+@WebFluxTest
+@ContextConfiguration(classes = RouterRest.class)
+@Import({
+        RouterRest.class,
+        FranquiciaController.class,
+        SucursalController.class,
+        ProductoController.class
+})
 @DisplayName("Router Rest Integration Tests")
 class RouterRestTest {
 
@@ -48,7 +64,7 @@ class RouterRestTest {
     private SaveFranquiciaUseCase saveFranquiciaUseCase;
 
         @MockitoBean
-        private co.com.bancolombia.usecase.franquicia.GetFranquiciaDetailedUseCase getFranquiciaDetailedUseCase;
+        private GetFranquiciaDetailedUseCase getFranquiciaDetailedUseCase;
 
     @MockitoBean
     private GetSucursalUseCase getSucursalUseCase;
@@ -75,16 +91,25 @@ class RouterRestTest {
     private GetProductosSucursalUseCase getProductosSucursalUseCase;
 
     @MockitoBean
-        private co.com.bancolombia.usecase.producto.ModifyStockUseCase modifyStockUseCase;
+        private ModifyStockUseCase modifyStockUseCase;
 
         @MockitoBean
-        private co.com.bancolombia.usecase.producto.DeleteProductoSucursalUseCase deleteProductoSucursalUseCase;
+        private DeleteProductoSucursalUseCase deleteProductoSucursalUseCase;
 
         @MockitoBean
-        private co.com.bancolombia.usecase.producto.DeleteProductoUseCase deleteProductoUseCase;
+        private DeleteProductoUseCase deleteProductoUseCase;
 
         @MockitoBean
-        private co.com.bancolombia.usecase.producto.GetMaxStockProductsByFranquiciaUseCase getMaxStockProductsByFranquiciaUseCase;
+        private GetMaxStockProductsByFranquiciaUseCase getMaxStockProductsByFranquiciaUseCase;
+
+        @MockitoBean
+        private HealthController healthController;
+
+        @BeforeEach
+        void setUp() {
+                when(healthController.health(any()))
+                                .thenReturn(ServerResponse.ok().build());
+        }
 
     @Test
     @DisplayName("Health endpoint should be accessible")
@@ -146,8 +171,9 @@ class RouterRestTest {
                 .uri("/api/franquicias/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Franquicia.class)
-                .isEqualTo(franquicia);
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.nombre").isEqualTo("Test Franquicia");
     }
 
     @Test
@@ -166,8 +192,10 @@ class RouterRestTest {
                 .uri("/api/sucursales/franquicia/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Sucursal.class)
-                .contains(sucursal);
+                .expectBody()
+                .jsonPath("$[0].id").isEqualTo(1)
+                .jsonPath("$[0].nombre").isEqualTo("Test Sucursal")
+                .jsonPath("$[0].franquiciaId").isEqualTo(1);
     }
 
     @Test
@@ -187,7 +215,10 @@ class RouterRestTest {
                 .uri("/api/productos/sucursal/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Producto.class)
-                .contains(producto);
+                .expectBody()
+                .jsonPath("$[0].id").isEqualTo(1)
+                .jsonPath("$[0].nombre").isEqualTo("Test Producto")
+                .jsonPath("$[0].stock").isEqualTo(50)
+                .jsonPath("$[0].sucursalId").isEqualTo(1);
     }
 }

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.reactivecommons.utils.ObjectMapper;
+import org.reactivestreams.Publisher;
+import org.springframework.data.domain.Example;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import reactor.core.publisher.Flux;
@@ -12,6 +14,7 @@ import reactor.test.StepVerifier;
 
 import java.util.Objects;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class ReactiveAdapterOperationsTest {
@@ -50,7 +53,7 @@ class ReactiveAdapterOperationsTest {
 
         when(mapper.map(entity1, DummyData.class)).thenReturn(data1);
         when(mapper.map(entity2, DummyData.class)).thenReturn(data2);
-        // when(repository.saveAll(any(Flux.class))).thenReturn(Flux.just(data1, data2));
+        when(repository.saveAll(any(Publisher.class))).thenReturn(Flux.just(data1, data2));
 
         StepVerifier.create(operations.saveAllEntities(Flux.just(entity1, entity2)))
                 .expectNext(entity1, entity2)
@@ -75,7 +78,7 @@ class ReactiveAdapterOperationsTest {
         DummyData data = new DummyData("1", "test");
 
         when(mapper.map(entity, DummyData.class)).thenReturn(data);
-        // when(repository.findAll(any(Example.class))).thenReturn(Flux.just(data));
+        when(repository.findAll(any(Example.class))).thenReturn(Flux.just(data));
 
         StepVerifier.create(operations.findByExample(entity))
                 .expectNext(entity)

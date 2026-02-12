@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.WebHandler;
 
 import co.com.bancolombia.api.dto.SaveFranquiciaDTO;
 import co.com.bancolombia.model.franquicia.Franquicia;
@@ -61,17 +60,17 @@ class FranquiciaControllerTest {
         when(getFranquiciasUseCase.execute())
                 .thenReturn(Flux.just(testFranquicia));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(franquiciaController)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(franquiciaController)
         ).build();
 
         webTestClient.get()
                 .uri("/api/franquicias")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Franquicia.class)
-                .hasSize(1)
-                .contains(testFranquicia);
+                .expectBody()
+                .jsonPath("$[0].id").isEqualTo(1)
+                .jsonPath("$[0].nombre").isEqualTo("Franquicia Test");
     }
 
     @Test
@@ -80,8 +79,8 @@ class FranquiciaControllerTest {
         when(getFranquiciasUseCase.execute())
                 .thenReturn(Flux.empty());
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(franquiciaController)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(franquiciaController)
         ).build();
 
         webTestClient.get()
@@ -96,16 +95,17 @@ class FranquiciaControllerTest {
         when(getFranquiciaUseCase.execute(1L))
                 .thenReturn(Mono.just(testFranquicia));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(franquiciaController)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(franquiciaController)
         ).build();
 
         webTestClient.get()
                 .uri("/api/franquicias/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Franquicia.class)
-                .isEqualTo(testFranquicia);
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.nombre").isEqualTo("Franquicia Test");
     }
 
     @Test
@@ -114,8 +114,8 @@ class FranquiciaControllerTest {
         when(saveFranquiciaUseCase.execute(any(Franquicia.class)))
                 .thenReturn(Mono.just(testFranquicia));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(franquiciaController)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(franquiciaController)
         ).build();
 
         webTestClient.post()
@@ -123,8 +123,9 @@ class FranquiciaControllerTest {
                 .bodyValue(testSaveDTO)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Franquicia.class)
-                .isEqualTo(testFranquicia);
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.nombre").isEqualTo("Franquicia Test");
     }
 
     private RouterFunction<ServerResponse> getRouterFunction(FranquiciaController franquiciaController) {

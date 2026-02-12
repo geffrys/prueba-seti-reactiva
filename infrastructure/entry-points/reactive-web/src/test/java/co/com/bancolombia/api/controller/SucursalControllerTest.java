@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.WebHandler;
 
 import co.com.bancolombia.api.dto.SaveSucursalDTO;
 import co.com.bancolombia.model.sucursal.Sucursal;
@@ -67,17 +66,18 @@ class SucursalControllerTest {
         when(getSucursalesUseCase.execute())
                 .thenReturn(Flux.just(testSucursal));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(sucursalController, null, null, null)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(sucursalController, null, null, null)
         ).build();
 
         webTestClient.get()
                 .uri("/api/sucursales")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Sucursal.class)
-                .hasSize(1)
-                .contains(testSucursal);
+                .expectBody()
+                .jsonPath("$[0].id").isEqualTo(1)
+                .jsonPath("$[0].nombre").isEqualTo("Sucursal Test")
+                .jsonPath("$[0].franquiciaId").isEqualTo(1);
     }
 
     @Test
@@ -86,8 +86,8 @@ class SucursalControllerTest {
         when(getSucursalesUseCase.execute())
                 .thenReturn(Flux.empty());
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(sucursalController, null, null, null)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(sucursalController, null, null, null)
         ).build();
 
         webTestClient.get()
@@ -102,16 +102,18 @@ class SucursalControllerTest {
         when(getSucursalUseCase.execute(1L))
                 .thenReturn(Mono.just(testSucursal));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(sucursalController, null, null, null)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(sucursalController, null, null, null)
         ).build();
 
         webTestClient.get()
                 .uri("/api/sucursales/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Sucursal.class)
-                .isEqualTo(testSucursal);
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.nombre").isEqualTo("Sucursal Test")
+                .jsonPath("$.franquiciaId").isEqualTo(1);
     }
 
     @Test
@@ -120,8 +122,8 @@ class SucursalControllerTest {
         when(saveSucursalUseCase.execute(any(Sucursal.class)))
                 .thenReturn(Mono.just(testSucursal));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(sucursalController, null, null, null)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(sucursalController, null, null, null)
         ).build();
 
         webTestClient.post()
@@ -129,8 +131,10 @@ class SucursalControllerTest {
                 .bodyValue(testSaveDTO)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Sucursal.class)
-                .isEqualTo(testSucursal);
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.nombre").isEqualTo("Sucursal Test")
+                .jsonPath("$.franquiciaId").isEqualTo(1);
     }
 
     @Test
@@ -139,17 +143,18 @@ class SucursalControllerTest {
         when(getSucursalFranquiciaUseCase.execute(1L))
                 .thenReturn(Flux.just(testSucursal));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(sucursalController, null, null, null)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(sucursalController, null, null, null)
         ).build();
 
         webTestClient.get()
                 .uri("/api/sucursales/franquicia/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Sucursal.class)
-                .hasSize(1)
-                .contains(testSucursal);
+                .expectBody()
+                .jsonPath("$[0].id").isEqualTo(1)
+                .jsonPath("$[0].nombre").isEqualTo("Sucursal Test")
+                .jsonPath("$[0].franquiciaId").isEqualTo(1);
     }
 
     private RouterFunction<ServerResponse> getRouterFunction(

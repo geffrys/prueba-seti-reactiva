@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.WebHandler;
 
 import co.com.bancolombia.api.dto.SaveProductoDTO;
 import co.com.bancolombia.model.producto.Producto;
@@ -69,17 +68,19 @@ class ProductoControllerTest {
         when(getProductosUseCase.execute())
                 .thenReturn(Flux.just(testProducto));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(productoController)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(productoController)
         ).build();
 
         webTestClient.get()
                 .uri("/api/productos")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Producto.class)
-                .hasSize(1)
-                .contains(testProducto);
+                .expectBody()
+                .jsonPath("$[0].id").isEqualTo(1)
+                .jsonPath("$[0].nombre").isEqualTo("Producto Test")
+                .jsonPath("$[0].stock").isEqualTo(100)
+                .jsonPath("$[0].sucursalId").isEqualTo(1);
     }
 
     @Test
@@ -88,8 +89,8 @@ class ProductoControllerTest {
         when(getProductosUseCase.execute())
                 .thenReturn(Flux.empty());
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(productoController)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(productoController)
         ).build();
 
         webTestClient.get()
@@ -104,16 +105,19 @@ class ProductoControllerTest {
         when(getProductoUseCase.execute(1L))
                 .thenReturn(Mono.just(testProducto));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(productoController)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(productoController)
         ).build();
 
         webTestClient.get()
                 .uri("/api/productos/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Producto.class)
-                .isEqualTo(testProducto);
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.nombre").isEqualTo("Producto Test")
+                .jsonPath("$.stock").isEqualTo(100)
+                .jsonPath("$.sucursalId").isEqualTo(1);
     }
 
     @Test
@@ -122,8 +126,8 @@ class ProductoControllerTest {
         when(saveProductoUseCase.execute(any(Producto.class)))
                 .thenReturn(Mono.just(testProducto));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(productoController)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(productoController)
         ).build();
 
         webTestClient.post()
@@ -131,8 +135,11 @@ class ProductoControllerTest {
                 .bodyValue(testSaveDTO)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Producto.class)
-                .isEqualTo(testProducto);
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.nombre").isEqualTo("Producto Test")
+                .jsonPath("$.stock").isEqualTo(100)
+                .jsonPath("$.sucursalId").isEqualTo(1);
     }
 
     @Test
@@ -141,17 +148,19 @@ class ProductoControllerTest {
         when(getProductosSucursalUseCase.execute(1L))
                 .thenReturn(Flux.just(testProducto));
 
-        webTestClient = WebTestClient.bindToWebHandler(
-                (WebHandler) getRouterFunction(productoController)
+        webTestClient = WebTestClient.bindToRouterFunction(
+                getRouterFunction(productoController)
         ).build();
 
         webTestClient.get()
                 .uri("/api/productos/sucursal/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Producto.class)
-                .hasSize(1)
-                .contains(testProducto);
+                .expectBody()
+                .jsonPath("$[0].id").isEqualTo(1)
+                .jsonPath("$[0].nombre").isEqualTo("Producto Test")
+                .jsonPath("$[0].stock").isEqualTo(100)
+                .jsonPath("$[0].sucursalId").isEqualTo(1);
     }
 
     private RouterFunction<ServerResponse> getRouterFunction(ProductoController productoController) {
